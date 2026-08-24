@@ -1,0 +1,9 @@
+# Source Inventory
+
+| Source name | Source-system type | Data format | Structured / semi-structured / unstructured | Expected update pattern | Likely acquisition method | Schema location or schema owner | Possible primary/business key | Potential schema-evolution risk | Potential data-quality risk |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| `customers.csv` | Local File System | CSV | Structured | Batch / Periodic | File read (Pandas) | File header row | `customer_id` | Columns renamed, dropped, or reordered | Deliberate missing and duplicate values |
+| `orders.json` | Local File System | JSON | Semi-structured | Batch / Periodic | File read (Pandas) | Self-describing / Embedded | `order_id` (implied) | Nested `shipping` object changes structure | Missing keys, invalid timestamps, or type mismatches |
+| `products.parquet` | Local File System | Parquet | Structured | Batch / Periodic | File read (PyArrow) | Embedded inside file metadata | `product_id` (implied) | Minimal (strict schema enforcement) | Null values in numeric or categorical fields |
+| `support_tickets` | Relational Database (PostgreSQL) | SQL Table | Structured | Real-time / OLTP | SQL Query (`psycopg2` / `sqlalchemy`) | Database Information Schema | `ticket_id` | Column data type alters or schema migrations | NULL values in `assigned_agent` and `resolved_at` |
+| JSONPlaceholder `/posts` API | Web Server | REST API (JSON) | Semi-structured | Real-time / On-demand | HTTP Request (`requests` library) | External API Provider | `id` | API endpoint changes or payload updates | Network timeouts, rate limiting, service downtime |
