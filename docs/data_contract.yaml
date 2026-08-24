@@ -1,0 +1,55 @@
+# Source Selection Rationale:
+# customers.csv was chosen because it represents core master data with clear business domain rules 
+# (e.g., segment types, email formats) and predictable schema requirements suited for an automated ingestion pipeline.
+
+dataset_name: customers
+version: 1.0
+owner: "unknown - requires source owner confirmation"
+source_type: file
+source_format: csv
+acquisition_method: S3 bucket batch file download
+expected_update_pattern: batch
+primary_key: customer_id
+
+schema:
+  - name: customer_id
+    type: string
+    nullable: false
+    description: Unique identifier for the customer
+  - name: first_name
+    type: string
+    nullable: false
+    description: Customer's given name
+  - name: last_name
+    type: string
+    nullable: false
+    description: Customer's family name
+  - name: email
+    type: string
+    nullable: true
+    description: Primary email address
+  - name: city
+    type: string
+    nullable: true
+    description: Primary city location
+  - name: signup_date
+    type: date
+    nullable: false
+    description: Date when the customer created their account
+  - name: customer_segment
+    type: string
+    nullable: false
+    description: Assigned business segment classification
+
+quality_rules:
+  - "customer_id must not be null"
+  - "customer_id must be unique across all records"
+  - "email must match valid pattern (@ symbol present) if not null"
+  - "signup_date must be formatted as YYYY-MM-DD"
+  - "customer_segment must belong to standard allowed values: Professional, Retail, SME, Student"
+
+freshness_expectation: "unknown - requires confirmation"
+duplicate_policy: deduplicate
+schema_evolution_policy: reject
+consumer: Data Warehouse Ingestion Pipeline
+notes: "Profiling detected 2 fully duplicated rows and missing values in email and city columns. Ingestion pipeline must deduplicate on customer_id before storage."
